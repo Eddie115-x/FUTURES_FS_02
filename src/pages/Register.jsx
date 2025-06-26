@@ -82,6 +82,25 @@ const Register = () => {
         throw error;
       }
       
+      // Create a profile record for the user
+      if (data && data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([{
+            id: data.user.id,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            email: formData.email,
+            role: 'customer' // Default role
+          }]);
+        
+        if (profileError) {
+          console.error('Error creating user profile:', profileError);
+          // Continue with registration flow even if profile creation fails
+          // We'll handle profile creation on first login if needed
+        }
+      }
+      
       navigate('/login');
       // You could also automatically sign them in and redirect to home page
     } catch (error) {
