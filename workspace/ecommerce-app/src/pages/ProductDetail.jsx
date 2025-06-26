@@ -13,7 +13,10 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        console.log('Fetching product with ID:', id);
+        console.log('Using Supabase URL:', process.env.REACT_APP_SUPABASE_URL);
         const data = await getProductById(id);
+        console.log('Product data received:', data);
         setProduct(data);
       } catch (error) {
         console.error('Error fetching product:', error);
