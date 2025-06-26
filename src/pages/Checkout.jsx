@@ -87,8 +87,8 @@ const Checkout = () => {
       // Clear cart
       clearCart();
       
-      // Redirect to success page
-      navigate('/orders');
+      // Redirect to success page with the order ID
+      navigate(`/orders?success=true&orderId=${orderId}`);
     } catch (error) {
       console.error('Error creating order:', error);
       alert('An error occurred while placing your order. Please try again.');
