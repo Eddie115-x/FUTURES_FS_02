@@ -1,0 +1,43 @@
+/* Global styles */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Custom styles below can override Tailwind defaults */
+body {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+/* Custom button styles */
+.btn {
+  @apply px-4 py-2 rounded transition duration-200;
+}
+
+.btn-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+}
+
+/* Custom card styles */
+.card {
+  @apply bg-white rounded-lg shadow-md overflow-hidden;
+}
+
+/* Form control styles */
+.form-control {
+  @apply w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+}
+
+/* Text utilities */
+.text-truncate {
+  @apply overflow-hidden whitespace-nowrap text-ellipsis;
+}
+
+/* Responsive container with padding */
+.container-padded {
+  @apply container mx-auto px-4;
+}
