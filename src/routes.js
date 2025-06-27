@@ -4,7 +4,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import RootLayout from './layouts/MainLayout';
 
 // Import pages
-import Admin from './pages/Admin';
+import Admin from './pages/AdminDashboard';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Home from './pages/Home';
