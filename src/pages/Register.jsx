@@ -66,42 +66,72 @@ const Register = () => {
     setLoading(true);
     
     try {
-      // Register user with Supabase
+      // Register user with Supabase - use simpler registration without metadata to avoid database errors
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            first_name: formData.firstName,
-            last_name: formData.lastName
-          }
-        }
+        password: formData.password
       });
       
       if (error) {
+        console.error('Registration error:', error);
         throw error;
       }
       
-      // Create a profile record for the user
-      if (data && data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([{
-            id: data.user.id,
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            email: formData.email,
-            role: 'customer' // Default role
-          }]);
-        
-        if (profileError) {
-          console.error('Error creating user profile:', profileError);
-          // Continue with registration flow even if profile creation fails
-          // We'll handle profile creation on first login if needed
+      // Log the user data for debugging
+      console.log('Registration successful:', data);
+
+      // Sign in the user immediately after registration
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+      
+      if (signInError) {
+        console.error('Error signing in after registration:', signInError);
+        alert('Registration successful! You can now log in with your credentials.');
+        navigate('/login');
+        return;
+      }
+
+      // Now that the user is signed in, we can safely update their profile
+      if (data?.user?.id) {
+        try {
+          // 1. First update user metadata in auth.users table
+          const { error: updateError } = await supabase.auth.updateUser({
+            data: {
+              first_name: formData.firstName,
+              last_name: formData.lastName
+            }
+          });
+          
+          if (updateError) console.error('Error updating user metadata:', updateError);
+          
+          // 2. Then explicitly create a profile record in the profiles table
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert([
+              {
+                id: data.user.id,
+                first_name: formData.firstName,
+                last_name: formData.lastName,
+                email: formData.email,
+                role: 'customer'
+              }
+            ], { onConflict: 'id', ignoreDuplicates: false });
+          
+          if (profileError) {
+            console.error('Error creating profile record:', profileError);
+          } else {
+            console.log('Profile created successfully');
+          }
+        } catch (profileError) {
+          console.error('Profile update error:', profileError);
         }
       }
       
-      navigate('/login');
+      // Show success message and redirect to home
+      alert('Registration successful! You are now logged in.');
+      navigate('/');
       // You could also automatically sign them in and redirect to home page
     } catch (error) {
       console.error('Error registering:', error);
