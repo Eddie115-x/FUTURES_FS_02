@@ -74,12 +74,65 @@ CREATE POLICY "Admins can manage products"
   );
 
 -- Insert sample products data
-INSERT INTO products (name, description, price, image_url, category, stock)
-VALUES
-  ('Wireless Headphones', 'Premium noise-canceling wireless headphones with long battery life and exceptional sound quality.', 129.99, 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', 'electronics', 50),
-  ('Smart Watch', 'Feature-packed smartwatch with health monitoring, notifications, and workout tracking.', 199.99, 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', 'electronics', 35),
-  ('Leather Backpack', 'Stylish and durable leather backpack perfect for everyday use or travel.', 79.99, 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', 'accessories', 40),
-  ('Fitness Tracker', 'Waterproof fitness band with heart rate monitoring and sleep tracking.', 59.99, 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', 'fitness', 65);
+-- Electronics category
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Bluetooth Headphones #1', 'Wireless over-ear headphones with noise cancellation', 149.99, 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg', 89, 'electronics');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Bluetooth Headphones #2', 'Wireless over-ear headphones with noise cancellation', 149.99, 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg', 29, 'electronics');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Smart Watch #3', 'Fitness tracker with heart rate monitor', 199.99, 'https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg', 84, 'electronics');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Smartphone XL #4', 'The latest smartphone with 6.5" screen and 128GB storage', 799.99, 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg', 97, 'electronics');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Laptop Pro #5', '15" laptop with 16GB RAM and 512GB SSD', 1299.99, 'https://images.pexels.com/photos/18105/pexels-photo.jpg', 24, 'electronics');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Smartphone XL #6', 'The latest smartphone with 6.5" screen and 128GB storage', 799.99, 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg', 78, 'electronics');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Smart Watch #7', 'Fitness tracker with heart rate monitor', 199.99, 'https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg', 98, 'electronics');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Laptop Pro #8', '15" laptop with 16GB RAM and 512GB SSD', 1299.99, 'https://images.pexels.com/photos/18105/pexels-photo.jpg', 30, 'electronics');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Bluetooth Headphones #9', 'Wireless over-ear headphones with noise cancellation', 149.99, 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg', 27, 'electronics');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Bluetooth Headphones #10', 'Wireless over-ear headphones with noise cancellation', 149.99, 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg', 27, 'electronics');
+
+-- Footwear category
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Running Shoes #1', 'Lightweight running shoes with extra cushioning', 89.99, 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg', 59, 'footwear');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Running Shoes #2', 'Lightweight running shoes with extra cushioning', 89.99, 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg', 68, 'footwear');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Running Shoes #3', 'Lightweight running shoes with extra cushioning', 89.99, 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg', 83, 'footwear');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Running Shoes #4', 'Lightweight running shoes with extra cushioning', 89.99, 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg', 28, 'footwear');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Running Shoes #5', 'Lightweight running shoes with extra cushioning', 89.99, 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg', 40, 'footwear');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Running Shoes #6', 'Lightweight running shoes with extra cushioning', 89.99, 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg', 90, 'footwear');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Running Shoes #7', 'Lightweight running shoes with extra cushioning', 89.99, 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg', 99, 'footwear');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Running Shoes #8', 'Lightweight running shoes with extra cushioning', 89.99, 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg', 62, 'footwear');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Running Shoes #9', 'Lightweight running shoes with extra cushioning', 89.99, 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg', 71, 'footwear');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Running Shoes #10', 'Lightweight running shoes with extra cushioning', 89.99, 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg', 71, 'footwear');
+
+-- Home category
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Coffee Maker #1', 'Programmable coffee maker with thermal carafe', 79.99, 'https://images.pexels.com/photos/90915/pexels-photo-90915.jpeg', 44, 'home');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Coffee Maker #2', 'Programmable coffee maker with thermal carafe', 79.99, 'https://images.pexels.com/photos/90915/pexels-photo-90915.jpeg', 65, 'home');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Desk Lamp #3', 'Adjustable desk lamp with wireless charging', 49.99, 'https://images.pexels.com/photos/1112598/pexels-photo-1112598.jpeg', 92, 'home');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Coffee Maker #4', 'Programmable coffee maker with thermal carafe', 79.99, 'https://images.pexels.com/photos/90915/pexels-photo-90915.jpeg', 37, 'home');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Desk Lamp #5', 'Adjustable desk lamp with wireless charging', 49.99, 'https://images.pexels.com/photos/1112598/pexels-photo-1112598.jpeg', 67, 'home');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Coffee Maker #6', 'Programmable coffee maker with thermal carafe', 79.99, 'https://images.pexels.com/photos/90915/pexels-photo-90915.jpeg', 59, 'home');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Coffee Maker #7', 'Programmable coffee maker with thermal carafe', 79.99, 'https://images.pexels.com/photos/90915/pexels-photo-90915.jpeg', 40, 'home');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Desk Lamp #8', 'Adjustable desk lamp with wireless charging', 49.99, 'https://images.pexels.com/photos/1112598/pexels-photo-1112598.jpeg', 31, 'home');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Desk Lamp #9', 'Adjustable desk lamp with wireless charging', 49.99, 'https://images.pexels.com/photos/1112598/pexels-photo-1112598.jpeg', 91, 'home');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Coffee Maker #10', 'Programmable coffee maker with thermal carafe', 79.99, 'https://images.pexels.com/photos/90915/pexels-photo-90915.jpeg', 28, 'home');
+
+-- Accessories category
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Backpack #1', 'Water-resistant backpack with laptop compartment', 59.99, 'https://images.pexels.com/photos/1294731/pexels-photo-1294731.jpeg', 24, 'accessories');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Backpack #2', 'Water-resistant backpack with laptop compartment', 59.99, 'https://images.pexels.com/photos/1294731/pexels-photo-1294731.jpeg', 41, 'accessories');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Backpack #3', 'Water-resistant backpack with laptop compartment', 59.99, 'https://images.pexels.com/photos/1294731/pexels-photo-1294731.jpeg', 52, 'accessories');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Backpack #4', 'Water-resistant backpack with laptop compartment', 59.99, 'https://images.pexels.com/photos/1294731/pexels-photo-1294731.jpeg', 69, 'accessories');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Backpack #5', 'Water-resistant backpack with laptop compartment', 59.99, 'https://images.pexels.com/photos/1294731/pexels-photo-1294731.jpeg', 86, 'accessories');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Backpack #6', 'Water-resistant backpack with laptop compartment', 59.99, 'https://images.pexels.com/photos/1294731/pexels-photo-1294731.jpeg', 90, 'accessories');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Backpack #7', 'Water-resistant backpack with laptop compartment', 59.99, 'https://images.pexels.com/photos/1294731/pexels-photo-1294731.jpeg', 95, 'accessories');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Backpack #8', 'Water-resistant backpack with laptop compartment', 59.99, 'https://images.pexels.com/photos/1294731/pexels-photo-1294731.jpeg', 33, 'accessories');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Backpack #9', 'Water-resistant backpack with laptop compartment', 59.99, 'https://images.pexels.com/photos/1294731/pexels-photo-1294731.jpeg', 74, 'accessories');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Backpack #10', 'Water-resistant backpack with laptop compartment', 59.99, 'https://images.pexels.com/photos/1294731/pexels-photo-1294731.jpeg', 72, 'accessories');
+
+-- Fitness category
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Yoga Mat #1', 'Non-slip yoga mat with carrying strap', 24.99, 'https://images.pexels.com/photos/4498577/pexels-photo-4498577.jpeg', 51, 'fitness');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Yoga Mat #2', 'Non-slip yoga mat with carrying strap', 24.99, 'https://images.pexels.com/photos/4498577/pexels-photo-4498577.jpeg', 58, 'fitness');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Yoga Mat #3', 'Non-slip yoga mat with carrying strap', 24.99, 'https://images.pexels.com/photos/4498577/pexels-photo-4498577.jpeg', 49, 'fitness');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Yoga Mat #4', 'Non-slip yoga mat with carrying strap', 24.99, 'https://images.pexels.com/photos/4498577/pexels-photo-4498577.jpeg', 57, 'fitness');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Yoga Mat #5', 'Non-slip yoga mat with carrying strap', 24.99, 'https://images.pexels.com/photos/4498577/pexels-photo-4498577.jpeg', 98, 'fitness');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Yoga Mat #6', 'Non-slip yoga mat with carrying strap', 24.99, 'https://images.pexels.com/photos/4498577/pexels-photo-4498577.jpeg', 35, 'fitness');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Yoga Mat #7', 'Non-slip yoga mat with carrying strap', 24.99, 'https://images.pexels.com/photos/4498577/pexels-photo-4498577.jpeg', 42, 'fitness');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Yoga Mat #8', 'Non-slip yoga mat with carrying strap', 24.99, 'https://images.pexels.com/photos/4498577/pexels-photo-4498577.jpeg', 56, 'fitness');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Yoga Mat #9', 'Non-slip yoga mat with carrying strap', 24.99, 'https://images.pexels.com/photos/4498577/pexels-photo-4498577.jpeg', 75, 'fitness');
+INSERT INTO products (name, description, price, image_url, stock, category) VALUES ('Yoga Mat #10', 'Non-slip yoga mat with carrying strap', 24.99, 'https://images.pexels.com/photos/4498577/pexels-photo-4498577.jpeg', 96, 'fitness');
 
 -- Create function to handle new user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()

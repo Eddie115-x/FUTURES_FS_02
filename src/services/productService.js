@@ -32,41 +32,60 @@ export const getProducts = async () => {
 
 // Sample products to display if database is empty or there's an error
 const sampleProducts = [
+  // Electronics
   {
     id: 1,
-    name: 'Wireless Headphones',
-    description: 'Premium noise-canceling wireless headphones with long battery life and exceptional sound quality.',
-    price: 129.99,
-    image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    name: 'Bluetooth Headphones #1',
+    description: 'Wireless over-ear headphones with noise cancellation',
+    price: 149.99,
+    image_url: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg',
     category: 'electronics',
-    stock: 50
+    stock: 89
   },
   {
     id: 2,
-    name: 'Smart Watch',
-    description: 'Feature-packed smartwatch with health monitoring, notifications, and workout tracking.',
-    price: 199.99,
-    image_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    name: 'Smartphone XL #4',
+    description: 'The latest smartphone with 6.5" screen and 128GB storage',
+    price: 799.99,
+    image_url: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg',
     category: 'electronics',
     stock: 35
   },
   {
     id: 3,
-    name: 'Leather Backpack',
-    description: 'Stylish and durable leather backpack perfect for everyday use or travel.',
-    price: 79.99,
-    image_url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    name: 'Backpack #5',
+    description: 'Water-resistant backpack with laptop compartment',
+    price: 59.99,
+    image_url: 'https://images.pexels.com/photos/1294731/pexels-photo-1294731.jpeg',
     category: 'accessories',
-    stock: 40
+    stock: 86
   },
   {
     id: 4,
-    name: 'Fitness Tracker',
-    description: 'Waterproof fitness band with heart rate monitoring and sleep tracking.',
-    price: 59.99,
-    image_url: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    name: 'Running Shoes #3',
+    description: 'Lightweight running shoes with extra cushioning',
+    price: 89.99,
+    image_url: 'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg',
+    category: 'footwear',
+    stock: 83
+  },
+  {
+    id: 5,
+    name: 'Coffee Maker #1',
+    description: 'Programmable coffee maker with thermal carafe',
+    price: 79.99,
+    image_url: 'https://images.pexels.com/photos/90915/pexels-photo-90915.jpeg',
+    category: 'home',
+    stock: 44
+  },
+  {
+    id: 6,
+    name: 'Yoga Mat #5',
+    description: 'Non-slip yoga mat with carrying strap',
+    price: 24.99,
+    image_url: 'https://images.pexels.com/photos/4498577/pexels-photo-4498577.jpeg',
     category: 'fitness',
-    stock: 65
+    stock: 98
   }
 ];
 
