@@ -6,7 +6,6 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "build",
-        "buildCommand": "npm install react-scripts --save && npm run build"
       }
     }
   ],
