@@ -3,21 +3,72 @@ import { supabase } from './supabaseClient';
 // Get all products
 export const getProducts = async () => {
   try {
+    console.log('Making Supabase request to products table...');
     const { data, error } = await supabase
       .from('products')
       .select('*')
       .order('name');
     
     if (error) {
+      console.error('Supabase returned an error:', error);
       throw error;
+    }
+    
+    console.log('Products data from Supabase:', data);
+    
+    // If no products exist, return sample data
+    if (!data || data.length === 0) {
+      console.log('No products found, returning sample data');
+      return sampleProducts;
     }
     
     return data || [];
   } catch (error) {
     console.error('Error fetching products:', error);
-    return [];
+    console.log('Returning sample products due to error');
+    return sampleProducts;
   }
 };
+
+// Sample products to display if database is empty or there's an error
+const sampleProducts = [
+  {
+    id: 1,
+    name: 'Wireless Headphones',
+    description: 'Premium noise-canceling wireless headphones with long battery life and exceptional sound quality.',
+    price: 129.99,
+    image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    category: 'electronics',
+    stock: 50
+  },
+  {
+    id: 2,
+    name: 'Smart Watch',
+    description: 'Feature-packed smartwatch with health monitoring, notifications, and workout tracking.',
+    price: 199.99,
+    image_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    category: 'electronics',
+    stock: 35
+  },
+  {
+    id: 3,
+    name: 'Leather Backpack',
+    description: 'Stylish and durable leather backpack perfect for everyday use or travel.',
+    price: 79.99,
+    image_url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    category: 'accessories',
+    stock: 40
+  },
+  {
+    id: 4,
+    name: 'Fitness Tracker',
+    description: 'Waterproof fitness band with heart rate monitoring and sleep tracking.',
+    price: 59.99,
+    image_url: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+    category: 'fitness',
+    stock: 65
+  }
+];
 
 // Get a single product by ID
 export const getProductById = async (id) => {
