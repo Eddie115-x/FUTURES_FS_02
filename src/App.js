@@ -1,6 +1,6 @@
 import './App.css';
 import { CartProvider } from './context/CartContext';
-import Routes from './routes.jsx';
+import Routes from './routes.js';
 
 function App() {
   return (
