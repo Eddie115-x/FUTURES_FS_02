@@ -61,6 +61,7 @@ const Login = () => {
         throw error;
       }
       
+      console.log('Login successful:', data); // ✅ Prevents ESLint error
       navigate('/');
     } catch (error) {
       console.error('Error logging in:', error);
