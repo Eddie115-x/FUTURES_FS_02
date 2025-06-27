@@ -1,6 +1,6 @@
+import { RouterProvider } from 'react-router-dom';
 import './App.css';
 import { CartProvider } from './context/CartContext';
-import { RouterProvider } from 'react-router-dom';
 import router from './routes.js';
 
 function App() {
