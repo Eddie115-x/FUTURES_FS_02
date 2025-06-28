@@ -12,7 +12,6 @@ const OrderConfirmation = () => {
   const [error, setError] = useState(null);
   const { user } = useAuth();
   const { currentOrder, getOrderById, clearCurrentOrder } = useOrder();
-  const [orderDisplayed, setOrderDisplayed] = useState(false);
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -58,8 +57,6 @@ const OrderConfirmation = () => {
           };
           
           setOrder(formattedOrder);
-          // Mark that we've successfully displayed the order
-          setOrderDisplayed(true);
           setLoading(false);
           
           // After the order loads successfully, set a flag to track that we've displayed it
@@ -83,7 +80,6 @@ const OrderConfirmation = () => {
           if (!error && data) {
             console.log("Found order in database:", data);
             setOrder(data);
-            setOrderDisplayed(true);
             setLoading(false);
             return;
           }
