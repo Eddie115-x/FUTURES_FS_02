@@ -21,7 +21,7 @@ const Footer = () => {
             <ul className="text-gray-400">
               <li className="mb-2">Email: contact@eds-eshop.com</li>
               <li className="mb-2">Phone: (123) 456-7890</li>
-              <li className="mb-2">Address: 123 E-Shop St, City, Country</li>
+              <li className="mb-2">Address: 123 Burerua Street, Suva, Fiji</li>
             </ul>
           </div>
         </div>
