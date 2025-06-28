@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useOrder } from '../context/OrderContext';
 import { createOrder } from '../services/orderService';
 import { supabase } from '../services/supabaseClient';
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { cart, getCartTotal, clearCart } = useCart();
+  const { setOrderDetails } = useOrder();
   const [orderError, setOrderError] = useState('');
   const [formData, setFormData] = useState({
     firstName: '',
@@ -88,25 +90,38 @@ const Checkout = () => {
       try {
         const orderId = await createOrder(order);
         
-        // Display success message
-        alert('Order placed successfully!');
+        // Store order details in context
+        setOrderDetails({
+          id: orderId,
+          items: cart,
+          total: getCartTotal(),
+          customer: order.customer
+        });
         
         // Clear cart
         clearCart();
         
-        // Redirect to success page with the order ID
-        navigate(`/orders?success=true&orderId=${orderId}`);
+        // Redirect to order confirmation page with the order ID
+        navigate(`/order/${orderId}`);
       } catch (error) {
         console.log('Simulating success despite error:', error);
         
         // For simulation, always go to success path even if there was an error
         const simulatedOrderId = "mock-order-" + Math.floor(Math.random() * 1000);
         
+        // Store simulated order details in context
+        setOrderDetails({
+          id: simulatedOrderId,
+          items: cart,
+          total: getCartTotal(),
+          customer: order.customer
+        });
+        
         // Clear cart
         clearCart();
         
-        // Redirect to success page with the simulated order ID
-        navigate(`/orders?success=true&orderId=${simulatedOrderId}`);
+        // Redirect to order confirmation page with the simulated order ID
+        navigate(`/order/${simulatedOrderId}`);
       }
     } catch (error) {
       // This catch block will likely never execute due to the inner try-catch,
@@ -115,8 +130,24 @@ const Checkout = () => {
       
       // For simulation, force success
       const simulatedOrderId = "error-recovery-order-" + Math.floor(Math.random() * 1000);
+      
+      // Store simulated order details in context
+      setOrderDetails({
+        id: simulatedOrderId,
+        items: cart,
+        total: getCartTotal(),
+        customer: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          address: formData.address,
+          city: formData.city,
+          zip_code: formData.zipCode,
+          country: formData.country
+        }
+      });
+      
       clearCart();
-      navigate(`/orders?success=true&orderId=${simulatedOrderId}`);
+      navigate(`/order/${simulatedOrderId}`);
     } finally {
       setLoading(false);
     }

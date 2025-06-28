@@ -10,8 +10,12 @@ import Checkout from './pages/Checkout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Orders from './pages/Orders';
+import OrderConfirmation from './pages/OrderConfirmation';
 import ProductDetail from './pages/ProductDetail';
 import Register from './pages/Register';
+
+// Import components
+import ProtectedRoute from './components/ProtectedRoute';
 
 const router = createBrowserRouter([
   {
@@ -26,6 +30,10 @@ const router = createBrowserRouter([
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
       { path: 'orders', element: <Orders /> },
+      { 
+        path: 'order/:orderId', 
+        element: <ProtectedRoute><OrderConfirmation /></ProtectedRoute> 
+      },
       { path: 'admin', element: <AdminDashboard /> }
     ]
   }
