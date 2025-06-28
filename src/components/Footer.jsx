@@ -5,7 +5,10 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-lg font-semibold mb-3">Ed's E-Shop</h3>
+            <div className="flex items-center mb-3">
+              <img src="/logo.png" alt="Ed's E-Shop Logo" className="h-8 mr-2" />
+              <h3 className="text-lg font-semibold">Ed's E-Shop</h3>
+            </div>
             <p className="text-gray-400">Your one-stop shop for all your needs.</p>
           </div>
           <div>
