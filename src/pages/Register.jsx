@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 
@@ -15,6 +15,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [registrationError, setRegistrationError] = useState('');
   const [checkingUsername, setCheckingUsername] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState(null); // Tracks if username is available
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,6 +24,11 @@ const Register = () => {
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+    
+    // Reset username availability when changing the username
+    if (name === 'username') {
+      setUsernameAvailable(null);
     }
     
     // Clear general registration error
@@ -34,7 +40,13 @@ const Register = () => {
   // Function to check if username is already taken
   const checkUsernameAvailability = async (username) => {
     setCheckingUsername(true);
+    setUsernameAvailable(null); // Reset availability status
+    
     try {
+      // Add a small delay to make the loading indicator visible
+      // This enhances UX by making the check feel more deliberate
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
       // Check if username exists in profiles table
       const { data, error } = await supabase
         .from('profiles')
@@ -45,13 +57,17 @@ const Register = () => {
       if (error && error.code !== 'PGRST116') {
         // PGRST116 means no results found, which is what we want
         console.error('Error checking username:', error);
-        return true; // Allow form to proceed, better UX in case of error
+        setUsernameAvailable(true); // Allow form to proceed, better UX in case of error
+        return true;
       }
       
-      return !data; // Username is available if no data was found
+      const isAvailable = !data;
+      setUsernameAvailable(isAvailable);
+      return isAvailable; // Username is available if no data was found
     } catch (error) {
       console.error('Error in username check:', error);
-      return true; // Allow form to proceed in case of error
+      setUsernameAvailable(true); // Allow form to proceed in case of error
+      return true;
     } finally {
       setCheckingUsername(false);
     }
@@ -69,13 +85,17 @@ const Register = () => {
       newErrors.username = 'Username must be at least 3 characters';
     } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
       newErrors.username = 'Username can only contain letters, numbers, and underscores';
-    } else {
-      // Check if username is already taken
+    } else if (usernameAvailable === false) {
+      // We already know username is taken from earlier check
+      newErrors.username = 'Username is already taken';
+    } else if (usernameAvailable === null) {
+      // If we don't have a result yet, do a check now
       const isAvailable = await checkUsernameAvailability(formData.username);
       if (!isAvailable) {
         newErrors.username = 'Username is already taken';
       }
     }
+    // If usernameAvailable is true, no error needed
     
     if (!formData.password) {
       newErrors.password = 'Password is required';
@@ -183,6 +203,26 @@ const Register = () => {
     }
   };
   
+  // useEffect for debounced username availability check
+  useEffect(() => {
+    // Don't check if username is too short
+    if (formData.username.length < 3) {
+      setUsernameAvailable(null);
+      return;
+    }
+
+    // Setup a timer for debouncing
+    const timer = setTimeout(() => {
+      // Only check if username meets the required format
+      if (/^[a-zA-Z0-9_]+$/.test(formData.username)) {
+        checkUsernameAvailability(formData.username);
+      }
+    }, 800); // Wait 800ms after user stops typing
+
+    // Cleanup: clear timeout if component unmounts or username changes again
+    return () => clearTimeout(timer);
+  }, [formData.username]);
+  
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-md mx-auto">
@@ -235,16 +275,33 @@ const Register = () => {
               <label className="block text-gray-700 mb-2" htmlFor="username">
                 Username
               </label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border rounded ${errors.username ? 'border-red-500' : (usernameAvailable === true ? 'border-green-500' : 'border-gray-300')}`}
+                />
+                {checkingUsername && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <div className="animate-spin h-5 w-5 border-2 border-gray-500 border-t-transparent rounded-full"></div>
+                  </div>
+                )}
+                {!checkingUsername && formData.username.length > 2 && usernameAvailable === true && !errors.username && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+              </div>
               {errors.username && (
                 <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+              )}
+              {!errors.username && formData.username.length > 2 && usernameAvailable === true && (
+                <p className="text-green-500 text-sm mt-1">Username is available!</p>
               )}
             </div>
             
