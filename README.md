@@ -1,4 +1,4 @@
-# 🛍️ Mini E-Commerce Platform
+# 🛍️ FUTURES Shop
 
 A full-stack mini e-commerce platform built with React, Tailwind CSS, and Supabase.
 
