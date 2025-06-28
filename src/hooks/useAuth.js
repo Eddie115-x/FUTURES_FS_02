@@ -34,9 +34,15 @@ const useAuth = () => {
     };
   }, []);
   
-  const signIn = async (email, password) => {
+  const signIn = async (username, password) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      // Create fake email from username
+      const fakeEmail = `${username.toLowerCase()}@noemail.com`;
+      
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email: fakeEmail, 
+        password 
+      });
       
       if (error) {
         throw error;
@@ -49,12 +55,21 @@ const useAuth = () => {
     }
   };
   
-  const signUp = async (email, password, userData) => {
+  const signUp = async (username, password, userData) => {
     try {
+      // Create fake email from username
+      const fakeEmail = `${username.toLowerCase()}@noemail.com`;
+      
+      // Add username to user data
+      const enhancedUserData = {
+        ...userData,
+        username
+      };
+      
       const { error } = await supabase.auth.signUp({ 
-        email, 
+        email: fakeEmail, 
         password,
-        options: { data: userData }
+        options: { data: enhancedUserData }
       });
       
       if (error) {

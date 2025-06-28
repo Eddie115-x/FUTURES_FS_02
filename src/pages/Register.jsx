@@ -7,13 +7,14 @@ const Register = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
+    username: '',
     password: '',
     confirmPassword: ''
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [registrationError, setRegistrationError] = useState('');
+  const [checkingUsername, setCheckingUsername] = useState(false);
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,16 +31,50 @@ const Register = () => {
     }
   };
   
-  const validateForm = () => {
+  // Function to check if username is already taken
+  const checkUsernameAvailability = async (username) => {
+    setCheckingUsername(true);
+    try {
+      // Check if username exists in profiles table
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        // PGRST116 means no results found, which is what we want
+        console.error('Error checking username:', error);
+        return true; // Allow form to proceed, better UX in case of error
+      }
+      
+      return !data; // Username is available if no data was found
+    } catch (error) {
+      console.error('Error in username check:', error);
+      return true; // Allow form to proceed in case of error
+    } finally {
+      setCheckingUsername(false);
+    }
+  };
+
+  const validateForm = async () => {
     const newErrors = {};
     
     if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
     if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
     
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
+    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
+      newErrors.username = 'Username can only contain letters, numbers, and underscores';
+    } else {
+      // Check if username is already taken
+      const isAvailable = await checkUsernameAvailability(formData.username);
+      if (!isAvailable) {
+        newErrors.username = 'Username is already taken';
+      }
     }
     
     if (!formData.password) {
@@ -61,14 +96,18 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
+    const isValid = await validateForm();
+    if (!isValid) return;
     
     setLoading(true);
     
     try {
-      // Register user with Supabase - use simpler registration without metadata to avoid database errors
+      // Create a fake email by appending @noemail.com to username
+      const fakeEmail = `${formData.username.toLowerCase()}@noemail.com`;
+      
+      // Register user with Supabase using the fake email
       const { data, error } = await supabase.auth.signUp({
-        email: formData.email,
+        email: fakeEmail,
         password: formData.password
       });
       
@@ -82,7 +121,7 @@ const Register = () => {
 
       // Sign in the user immediately after registration
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: formData.email,
+        email: fakeEmail,
         password: formData.password,
       });
       
@@ -114,7 +153,8 @@ const Register = () => {
                 id: data.user.id,
                 first_name: formData.firstName,
                 last_name: formData.lastName,
-                email: formData.email,
+                email: `${formData.username.toLowerCase()}@noemail.com`,
+                username: formData.username,
                 role: 'customer'
               }
             ], { onConflict: 'id', ignoreDuplicates: false });
@@ -192,19 +232,19 @@ const Register = () => {
             </div>
             
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="email">
-                Email Address
+              <label className="block text-gray-700 mb-2" htmlFor="username">
+                Username
               </label>
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full px-4 py-2 border rounded ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
               />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              {errors.username && (
+                <p className="text-red-500 text-sm mt-1">{errors.username}</p>
               )}
             </div>
             

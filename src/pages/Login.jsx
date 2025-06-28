@@ -5,7 +5,7 @@ import { supabase } from '../services/supabaseClient';
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
   const [errors, setErrors] = useState({});
@@ -30,10 +30,8 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
     }
     
     if (!formData.password) {
@@ -52,8 +50,11 @@ const Login = () => {
     setLoading(true);
     
     try {
+      // Create a fake email from username
+      const fakeEmail = `${formData.username.toLowerCase()}@noemail.com`;
+      
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
+        email: fakeEmail,
         password: formData.password
       });
       
@@ -61,11 +62,11 @@ const Login = () => {
         throw error;
       }
       
-      console.log('Login successful:', data); // ✅ Prevents ESLint error
+      console.log('Login successful:', data); 
       navigate('/');
     } catch (error) {
       console.error('Error logging in:', error);
-      setLoginError('Invalid email or password. Please try again.');
+      setLoginError('Invalid username or password. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -85,19 +86,19 @@ const Login = () => {
           
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="email">
-                Email Address
+              <label className="block text-gray-700 mb-2" htmlFor="username">
+                Username
               </label>
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full px-4 py-2 border rounded ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
               />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              {errors.username && (
+                <p className="text-red-500 text-sm mt-1">{errors.username}</p>
               )}
             </div>
             
