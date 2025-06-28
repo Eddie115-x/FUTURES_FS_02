@@ -4,10 +4,34 @@ CREATE TABLE IF NOT EXISTS profiles (
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
+  username TEXT UNIQUE NOT NULL,
   role TEXT DEFAULT 'customer' NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
 );
+
+-- Add index on username for faster lookups
+CREATE INDEX IF NOT EXISTS profiles_username_idx ON profiles (username);
+
+-- Add trigger to enforce username uniqueness (case insensitive)
+CREATE OR REPLACE FUNCTION check_username_uniqueness()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM profiles
+    WHERE LOWER(username) = LOWER(NEW.username)
+    AND id != NEW.id
+  ) THEN
+    RAISE EXCEPTION 'Username already exists (case-insensitive)';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS enforce_username_uniqueness ON profiles;
+CREATE TRIGGER enforce_username_uniqueness
+  BEFORE INSERT OR UPDATE ON profiles
+  FOR EACH ROW EXECUTE PROCEDURE check_username_uniqueness();
 
 -- Enable RLS (Row Level Security) for profiles table
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -45,12 +69,13 @@ CREATE POLICY "Admins can view all profiles"
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, first_name, last_name, email, role)
+  INSERT INTO public.profiles (id, first_name, last_name, email, username, role)
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'first_name', 'User'),
     COALESCE(NEW.raw_user_meta_data->>'last_name', ''),
     NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'username', SPLIT_PART(NEW.email, '@', 1)),
     'customer'
   )
   ON CONFLICT (id) DO NOTHING;

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import './App.css';
 import { CartProvider } from './context/CartContext';
+import { OrderProvider } from './context/OrderContext';
 import router from './routes.js';
 
 function App() {
@@ -47,7 +48,9 @@ function App() {
 
   return (
     <CartProvider>
-      <RouterProvider router={router} fallbackElement={<div>Loading...</div>} />
+      <OrderProvider>
+        <RouterProvider router={router} fallbackElement={<div>Loading...</div>} />
+      </OrderProvider>
     </CartProvider>
   );
 }

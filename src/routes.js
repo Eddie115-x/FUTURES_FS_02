@@ -9,9 +9,12 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import OrderConfirmation from './pages/OrderConfirmation';
 import Orders from './pages/Orders';
 import ProductDetail from './pages/ProductDetail';
 import Register from './pages/Register';
+
+// Import components
 
 const router = createBrowserRouter([
   {
@@ -26,6 +29,10 @@ const router = createBrowserRouter([
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },
       { path: 'orders', element: <Orders /> },
+      { 
+        path: 'order/:orderId', 
+        element: <OrderConfirmation />
+      },
       { path: 'admin', element: <AdminDashboard /> }
     ]
   }

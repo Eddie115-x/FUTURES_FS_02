@@ -34,15 +34,15 @@ const Home = () => {
   
   return (
     <div>
-      <div className="bg-blue-600 text-white py-16">
+      <div className="bg-blue-600 text-white py-8 sm:py-12 md:py-16">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4">Welcome to E-Shop</h1>
-          <p className="text-xl mb-8">Discover amazing products at affordable prices.</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-4">Welcome to Ed's E-Shop</h1>
+          <p className="text-lg sm:text-xl mb-6 sm:mb-8">Discover amazing products at affordable prices.</p>
           <div className="max-w-md mx-auto">
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full px-4 py-3 rounded-lg text-black"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-black"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -51,12 +51,12 @@ const Home = () => {
       </div>
       
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 overflow-x-auto">
-          <div className="flex space-x-4 pb-2">
+        <div className="mb-8 overflow-x-auto scrollbar-hide">
+          <div className="flex space-x-4 pb-2 whitespace-nowrap">
             {categories.map(category => (
               <button
                 key={category}
-                className={`px-4 py-2 rounded ${
+                className={`px-4 py-2 rounded whitespace-nowrap text-sm sm:text-base ${
                   filter === category ? 'bg-blue-600 text-white' : 'bg-gray-200'
                 }`}
                 onClick={() => setFilter(category)}
@@ -74,7 +74,7 @@ const Home = () => {
         ) : (
           <>
             <h2 className="text-2xl font-bold mb-6">Our Products</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="product-grid">
               {filteredProducts.map(product => (
                 <ProductCard key={product.id} product={product} />
               ))}

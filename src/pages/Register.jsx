@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 
@@ -7,13 +7,15 @@ const Register = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
+    username: '',
     password: '',
     confirmPassword: ''
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [registrationError, setRegistrationError] = useState('');
+  const [checkingUsername, setCheckingUsername] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState(null); // Tracks if username is available
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,23 +26,76 @@ const Register = () => {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
     
+    // Reset username availability when changing the username
+    if (name === 'username') {
+      setUsernameAvailable(null);
+    }
+    
     // Clear general registration error
     if (registrationError) {
       setRegistrationError('');
     }
   };
   
-  const validateForm = () => {
+  // Function to check if username is already taken
+  const checkUsernameAvailability = async (username) => {
+    setCheckingUsername(true);
+    setUsernameAvailable(null); // Reset availability status
+    
+    try {
+      // Add a small delay to make the loading indicator visible
+      // This enhances UX by making the check feel more deliberate
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
+      // Check if username exists in profiles table
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        // PGRST116 means no results found, which is what we want
+        console.error('Error checking username:', error);
+        setUsernameAvailable(true); // Allow form to proceed, better UX in case of error
+        return true;
+      }
+      
+      const isAvailable = !data;
+      setUsernameAvailable(isAvailable);
+      return isAvailable; // Username is available if no data was found
+    } catch (error) {
+      console.error('Error in username check:', error);
+      setUsernameAvailable(true); // Allow form to proceed in case of error
+      return true;
+    } finally {
+      setCheckingUsername(false);
+    }
+  };
+
+  const validateForm = async () => {
     const newErrors = {};
     
     if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
     if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
     
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
+    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
+      newErrors.username = 'Username can only contain letters, numbers, and underscores';
+    } else if (usernameAvailable === false) {
+      // We already know username is taken from earlier check
+      newErrors.username = 'Username is already taken';
+    } else if (usernameAvailable === null) {
+      // If we don't have a result yet, do a check now
+      const isAvailable = await checkUsernameAvailability(formData.username);
+      if (!isAvailable) {
+        newErrors.username = 'Username is already taken';
+      }
     }
+    // If usernameAvailable is true, no error needed
     
     if (!formData.password) {
       newErrors.password = 'Password is required';
@@ -61,14 +116,18 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) return;
+    const isValid = await validateForm();
+    if (!isValid) return;
     
     setLoading(true);
     
     try {
-      // Register user with Supabase - use simpler registration without metadata to avoid database errors
+      // Create a fake email by appending @noemail.com to username
+      const fakeEmail = `${formData.username.toLowerCase()}@noemail.com`;
+      
+      // Register user with Supabase using the fake email
       const { data, error } = await supabase.auth.signUp({
-        email: formData.email,
+        email: fakeEmail,
         password: formData.password
       });
       
@@ -82,7 +141,7 @@ const Register = () => {
 
       // Sign in the user immediately after registration
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: formData.email,
+        email: fakeEmail,
         password: formData.password,
       });
       
@@ -114,7 +173,8 @@ const Register = () => {
                 id: data.user.id,
                 first_name: formData.firstName,
                 last_name: formData.lastName,
-                email: formData.email,
+                email: `${formData.username.toLowerCase()}@noemail.com`,
+                username: formData.username,
                 role: 'customer'
               }
             ], { onConflict: 'id', ignoreDuplicates: false });
@@ -142,6 +202,26 @@ const Register = () => {
       setLoading(false);
     }
   };
+  
+  // useEffect for debounced username availability check
+  useEffect(() => {
+    // Don't check if username is too short
+    if (formData.username.length < 3) {
+      setUsernameAvailable(null);
+      return;
+    }
+
+    // Setup a timer for debouncing
+    const timer = setTimeout(() => {
+      // Only check if username meets the required format
+      if (/^[a-zA-Z0-9_]+$/.test(formData.username)) {
+        checkUsernameAvailability(formData.username);
+      }
+    }, 800); // Wait 800ms after user stops typing
+
+    // Cleanup: clear timeout if component unmounts or username changes again
+    return () => clearTimeout(timer);
+  }, [formData.username]);
   
   return (
     <div className="container mx-auto px-4 py-12">
@@ -192,19 +272,36 @@ const Register = () => {
             </div>
             
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="email">
-                Email Address
+              <label className="block text-gray-700 mb-2" htmlFor="username">
+                Username
               </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border rounded ${errors.username ? 'border-red-500' : (usernameAvailable === true ? 'border-green-500' : 'border-gray-300')}`}
+                />
+                {checkingUsername && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <div className="animate-spin h-5 w-5 border-2 border-gray-500 border-t-transparent rounded-full"></div>
+                  </div>
+                )}
+                {!checkingUsername && formData.username.length > 2 && usernameAvailable === true && !errors.username && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              {errors.username && (
+                <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+              )}
+              {!errors.username && formData.username.length > 2 && usernameAvailable === true && (
+                <p className="text-green-500 text-sm mt-1">Username is available!</p>
               )}
             </div>
             
