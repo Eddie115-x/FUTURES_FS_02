@@ -9,13 +9,12 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Orders from './pages/Orders';
 import OrderConfirmation from './pages/OrderConfirmation';
+import Orders from './pages/Orders';
 import ProductDetail from './pages/ProductDetail';
 import Register from './pages/Register';
 
 // Import components
-import ProtectedRoute from './components/ProtectedRoute';
 
 const router = createBrowserRouter([
   {
@@ -32,7 +31,7 @@ const router = createBrowserRouter([
       { path: 'orders', element: <Orders /> },
       { 
         path: 'order/:orderId', 
-        element: <ProtectedRoute><OrderConfirmation /></ProtectedRoute> 
+        element: <OrderConfirmation />
       },
       { path: 'admin', element: <AdminDashboard /> }
     ]

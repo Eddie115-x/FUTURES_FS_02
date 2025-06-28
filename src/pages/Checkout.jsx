@@ -90,13 +90,33 @@ const Checkout = () => {
       try {
         const orderId = await createOrder(order);
         
-        // Store order details in context
-        setOrderDetails({
+        // Store detailed order details in context with more complete information
+        // This object will be persisted to localStorage for retrieval on page reload
+        const completeOrderDetails = {
           id: orderId,
-          items: cart,
+          items: cart.map(item => ({
+            ...item,
+            product_id: item.id
+          })),
           total: getCartTotal(),
-          customer: order.customer
-        });
+          subtotal: getCartTotal() * 0.9, // Estimated subtotal
+          tax: getCartTotal() * 0.1,      // Estimated tax
+          shipping_cost: 10,              // Default shipping cost
+          status: 'Processing',
+          created_at: new Date().toISOString(),
+          customer: order.customer,
+          shipping_address: {
+            name: `${formData.firstName} ${formData.lastName}`,
+            address: formData.address,
+            city: formData.city,
+            state: '', // Could be added to your form
+            zip: formData.zipCode,
+            country: formData.country
+          }
+        };
+        
+        console.log("Saving order to context & localStorage:", completeOrderDetails);
+        setOrderDetails(completeOrderDetails);
         
         // Clear cart
         clearCart();
@@ -109,13 +129,32 @@ const Checkout = () => {
         // For simulation, always go to success path even if there was an error
         const simulatedOrderId = "mock-order-" + Math.floor(Math.random() * 1000);
         
-        // Store simulated order details in context
-        setOrderDetails({
+        // Store detailed simulated order details in context
+        const simulatedOrderDetails = {
           id: simulatedOrderId,
-          items: cart,
+          items: cart.map(item => ({
+            ...item,
+            product_id: item.id
+          })),
           total: getCartTotal(),
-          customer: order.customer
-        });
+          subtotal: getCartTotal() * 0.9, // Estimated subtotal
+          tax: getCartTotal() * 0.1,      // Estimated tax
+          shipping_cost: 10,              // Default shipping cost
+          status: 'Processing',
+          created_at: new Date().toISOString(),
+          customer: order.customer,
+          shipping_address: {
+            name: `${formData.firstName} ${formData.lastName}`,
+            address: formData.address,
+            city: formData.city,
+            state: '', // Could be added to your form
+            zip: formData.zipCode,
+            country: formData.country
+          }
+        };
+        
+        console.log("Saving simulated order to context & localStorage:", simulatedOrderDetails);
+        setOrderDetails(simulatedOrderDetails);
         
         // Clear cart
         clearCart();
@@ -131,11 +170,19 @@ const Checkout = () => {
       // For simulation, force success
       const simulatedOrderId = "error-recovery-order-" + Math.floor(Math.random() * 1000);
       
-      // Store simulated order details in context
-      setOrderDetails({
+      // Store detailed error recovery order details in context
+      const errorRecoveryOrderDetails = {
         id: simulatedOrderId,
-        items: cart,
+        items: cart.map(item => ({
+          ...item,
+          product_id: item.id
+        })),
         total: getCartTotal(),
+        subtotal: getCartTotal() * 0.9, // Estimated subtotal
+        tax: getCartTotal() * 0.1,      // Estimated tax
+        shipping_cost: 10,              // Default shipping cost
+        status: 'Processing',
+        created_at: new Date().toISOString(),
         customer: {
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
@@ -143,8 +190,19 @@ const Checkout = () => {
           city: formData.city,
           zip_code: formData.zipCode,
           country: formData.country
+        },
+        shipping_address: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          address: formData.address,
+          city: formData.city,
+          state: '',
+          zip: formData.zipCode,
+          country: formData.country
         }
-      });
+      };
+      
+      console.log("Saving error recovery order to context & localStorage:", errorRecoveryOrderDetails);
+      setOrderDetails(errorRecoveryOrderDetails);
       
       clearCart();
       navigate(`/order/${simulatedOrderId}`);

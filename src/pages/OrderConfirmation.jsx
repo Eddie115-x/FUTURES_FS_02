@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
-import { supabase } from '../services/supabaseClient';
-import useAuth from '../hooks/useAuth';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
+import useAuth from '../hooks/useAuth';
+import { supabase } from '../services/supabaseClient';
 import '../styles/globals.css';
 
 const OrderConfirmation = () => {
@@ -11,43 +11,88 @@ const OrderConfirmation = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
-  const { currentOrder, clearCurrentOrder } = useOrder();
+  const { currentOrder, getOrderById, clearCurrentOrder } = useOrder();
+  const [orderDisplayed, setOrderDisplayed] = useState(false);
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
-      if (!orderId || !user) {
+      if (!orderId) {
         setLoading(false);
         return;
       }
 
       try {
-        // Check if we already have the order details in context first
-        if (currentOrder && currentOrder.id === orderId) {
-          // We still fetch from the database to get the most up-to-date info
-          const { data, error } = await supabase
-            .from('orders')
-            .select('*, order_items(*, product:products(name, image_url))')
-            .eq('id', orderId)
-            .eq('user_id', user.id)
-            .single();
-
-          if (error) throw error;
+        // Check if we have the order anywhere (in state, context, or localStorage)
+        const orderData = getOrderById(orderId) || currentOrder;
+        
+        if (orderData && orderData.id === orderId) {
+          console.log("Using order from context/storage:", orderData);
           
-          setOrder(data);
-          // Clear the order from context after fetching
-          clearCurrentOrder();
-        } else {
-          const { data, error } = await supabase
-            .from('orders')
-            .select('*, order_items(*, product:products(name, image_url))')
-            .eq('id', orderId)
-            .eq('user_id', user.id)
-            .single();
-
-          if (error) throw error;
+          // Format the order data if it came from context to match database structure
+          const formattedOrder = {
+            id: orderData.id,
+            total: orderData.total,
+            created_at: orderData.created_at || new Date().toISOString(),
+            status: orderData.status || 'Processing',
+            subtotal: orderData.subtotal || (orderData.total * 0.9), // Rough estimate
+            shipping_cost: orderData.shipping_cost || 10,
+            tax: orderData.tax || (orderData.total * 0.1), // Rough estimate
+            shipping_address: orderData.shipping_address || (orderData.customer ? {
+              name: orderData.customer.name,
+              address: orderData.customer.address,
+              city: orderData.customer.city,
+              state: '',
+              zip: orderData.customer.zip_code,
+              country: orderData.customer.country
+            } : null),
+            order_items: orderData.items ? orderData.items.map(item => ({
+              id: `item-${item.id}`,
+              product_id: item.id,
+              price: item.price,
+              quantity: item.quantity,
+              product: {
+                name: item.name,
+                image_url: item.image_url
+              }
+            })) : []
+          };
           
-          setOrder(data);
+          setOrder(formattedOrder);
+          // Mark that we've successfully displayed the order
+          setOrderDisplayed(true);
+          setLoading(false);
+          
+          // After the order loads successfully, set a flag to track that we've displayed it
+          setTimeout(() => {
+            console.log("Order successfully displayed");
+          }, 500);
+          
+          return;
         }
+        
+        // If user is logged in, try to fetch from database
+        if (user) {
+          console.log("Fetching order from database for user:", user.id);
+          const { data, error } = await supabase
+            .from('orders')
+            .select('*, order_items(*, product:products(name, image_url))')
+            .eq('id', orderId)
+            .eq('user_id', user.id)
+            .single();
+
+          if (!error && data) {
+            console.log("Found order in database:", data);
+            setOrder(data);
+            setOrderDisplayed(true);
+            setLoading(false);
+            return;
+          }
+        }
+        
+        // If we get here, either the user is not authenticated or the order wasn't found
+        // No order found anywhere
+        console.error("Order not found in context, localStorage, or database:", orderId);
+        setError('Order not found or you may not have permission to view it.');
       } catch (err) {
         console.error('Error fetching order:', err);
         setError('Failed to load order details. Please try again later.');
@@ -57,12 +102,18 @@ const OrderConfirmation = () => {
     };
 
     fetchOrderDetails();
-  }, [orderId, user, currentOrder, clearCurrentOrder]);
+    
+    // Don't clear the order context until the user navigates away
+    // This allows refreshing the page or using back/forward navigation
+    return () => {
+      // We're intentionally not clearing the order context here
+      // The order will remain in localStorage until explicitly cleared
+      // or replaced by a new order
+    };
+  }, [orderId, user, currentOrder, getOrderById]);
 
-  // Redirect if user is not authenticated
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
+  // No longer redirect if user is not authenticated
+  // We'll display the order from context even for non-authenticated users
 
   if (loading) {
     return (
@@ -206,19 +257,33 @@ const OrderConfirmation = () => {
           </div>
         </div>
         
-        <div className="mt-8 flex flex-col sm:flex-row justify-between items-center">
-          <button
-            onClick={() => window.location.href = '/'}
-            className="bg-gray-200 text-gray-800 py-2 px-6 rounded-md hover:bg-gray-300 mb-3 sm:mb-0 w-full sm:w-auto"
-          >
-            Continue Shopping
-          </button>
-          <button
-            onClick={() => window.location.href = '/orders'}
-            className="bg-primary text-white py-2 px-6 rounded-md hover:bg-primary-dark w-full sm:w-auto"
-          >
-            View All Orders
-          </button>
+        <div className="mt-8">
+          <div className="bg-green-100 text-green-700 p-4 rounded-lg mb-6">
+            <p className="font-medium">Thank you for your order! We've received your order and will process it shortly.</p>
+            <p className="text-sm mt-1">A confirmation email will be sent to {order.customer?.email || 'your email address'}.</p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row justify-between items-center">
+            <button
+              onClick={() => {
+                // Clear the order context and go to home page
+                clearCurrentOrder();
+                window.location.href = '/';
+              }}
+              className="bg-gray-200 text-gray-800 py-2 px-6 rounded-md hover:bg-gray-300 mb-3 sm:mb-0 w-full sm:w-auto"
+            >
+              Continue Shopping
+            </button>
+            <button
+              onClick={() => {
+                clearCurrentOrder();
+                window.location.href = '/orders';
+              }}
+              className="bg-primary text-white py-2 px-6 rounded-md hover:bg-primary-dark w-full sm:w-auto"
+            >
+              View All Orders
+            </button>
+          </div>
         </div>
       </div>
     </div>
